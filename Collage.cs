@@ -1,0 +1,62 @@
+﻿using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+
+namespace Лаба3_1_
+{
+    [Serializable]
+    public class Collage
+    {
+        public static int Collaging(string Path1, string Path2, string outputImagePath)
+        {
+            // Пример использования функции CreateCollage
+            if (CreateCollage(Path1, Path2, outputImagePath))
+            {
+                Console.WriteLine("Коллаж успешно создан!");
+                return 1;
+            }
+            else
+            {
+                Console.WriteLine("Ошибка при создании коллажа.");
+                return 0;
+            }
+        }
+
+        public static bool CreateCollage(string imagePath1, string imagePath2, string outputImagePath)
+        {
+            try
+            {
+                // Загружаем изображения
+                using (Bitmap image1 = new Bitmap(imagePath1))
+                using (Bitmap image2 = new Bitmap(imagePath2))
+                {
+                    // Создаем новое изображение (коллаж) с размерами, равными максимальным из двух изображений
+                    int collageWidth = Math.Max(image1.Width, image2.Width);
+                    int collageHeight = Math.Max(image1.Height, image2.Height);
+
+                    using (Bitmap collage = new Bitmap(collageWidth * 2, collageHeight))
+                    {
+                        using (Graphics g = Graphics.FromImage(collage))
+                        {
+                            // Рисуем первое изображение
+                            g.DrawImage(image1, new Rectangle(0, 0, image1.Width, image1.Height));
+
+                            // Рисуем второе изображение, масштабируя его к размерам коллажа
+                            g.DrawImage(image2, new Rectangle(image1.Width, 0, collageWidth, collageHeight));
+                        }
+
+                        // Сохраняем результат
+                        collage.Save(outputImagePath, ImageFormat.Jpeg);
+                    }
+                }
+
+                return true; // Возвращаем true при успешном создании коллажа
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Произошла ошибка: {ex.Message}");
+                return false; // Возвращаем false при возникновении ошибки
+            }
+        }
+    }
+}
